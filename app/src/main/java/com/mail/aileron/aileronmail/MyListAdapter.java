@@ -1,14 +1,13 @@
 package com.mail.aileron.aileronmail;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.mail.aileron.object.Message;
 
 import java.util.ArrayList;
 
@@ -38,7 +37,13 @@ public class MyListAdapter extends ArrayAdapter<Message> {
         TextView smsView = (TextView) itemView.findViewById(R.id.viewSMS);
 
         phoneView.setText(currentSMS.phone);
-        smsView.setText(currentSMS.message);
+        String message = currentSMS.message;
+        message = message.replaceAll("(\\r|\\n)", " ");
+        if (message.length()>25){
+            smsView.setText(message.substring(0,25)+" ...");
+        }else {
+            smsView.setText(message);
+        }
 
         return itemView;
     }

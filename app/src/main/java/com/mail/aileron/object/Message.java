@@ -1,4 +1,4 @@
-package com.mail.aileron.aileronmail;
+package com.mail.aileron.object;
 
 /**
  * Created by daniar on 23/04/16.

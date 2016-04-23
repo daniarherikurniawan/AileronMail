@@ -29,11 +29,11 @@ public class DBTableCreator extends SQLiteOpenHelper {
 
         db.execSQL(
                 "create table inbox " +
-                        "(id integer primary key, no_sender text, name_sender text, message text, status text)"
+                        "(id integer primary key, no_sender text, message text, status text)"
         );
         db.execSQL(
                 "create table outbox " +
-                        "(id integer primary key, no_receiver text, name_receiver text, message text)"
+                        "(id integer primary key, no_receiver text, message text)"
         );
     }
 

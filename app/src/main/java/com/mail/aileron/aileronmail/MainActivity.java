@@ -1,12 +1,9 @@
 package com.mail.aileron.aileronmail;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -29,14 +25,15 @@ import com.mail.aileron.database.DBHelperUser;
 import com.mail.aileron.database.DBTableCreator;
 import com.mail.aileron.inbox.WriteSMSActivity;
 import com.mail.aileron.login.LoginActivity;
+import com.mail.aileron.object.Message;
+import com.mail.aileron.reader.ReadInbox;
+import com.mail.aileron.reader.ReadOutbox;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private TextView msg;
-    String[] cars ={"Camaro", "Lamborgini","Toyota", "Ferrari", "BMW"};
-    String[] cars2 ={"Suzuki", "Honda","Daihatsu", "GT R", "Nissan"};
     ListView list;
 
     private DBTableCreator mydbCreator;
@@ -57,9 +54,8 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Inbox");
 
         list = (ListView) findViewById(R.id.listSMS);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, cars);
-        list.setAdapter(adapter);
+        initializeInboxDisplay();
+
 
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -73,9 +69,17 @@ public class MainActivity extends AppCompatActivity
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                    long arg3) {
-                Toast.makeText(getApplicationContext(), "click: " + arg0, Toast.LENGTH_LONG).show();
+            public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
+                                    long id) {
+                Intent intent;
+                if (getSupportActionBar().getTitle() == "Inbox") {
+                    intent = new Intent(MainActivity.this, ReadInbox.class);
+                } else {
+                    intent = new Intent(MainActivity.this, ReadOutbox.class);
+                }
+
+                intent.putExtra("id", "" + id);
+                startActivity(intent);
             }
 
         });
@@ -91,9 +95,6 @@ public class MainActivity extends AppCompatActivity
 //                Snackbar.make(view, "inbox : "+mydbInbox.getAllInbox().toString(), Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 //
-                Snackbar.make(view, "outbox : "+mydbOutbox.getAllOutbox().get(0).phone, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
 //                Snackbar.make(view, "user : "+mydbUser.getAllUsers().toString(), Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 //                // creating required tables
@@ -103,8 +104,6 @@ public class MainActivity extends AppCompatActivity
 //
 
                 Intent intent = new Intent(MainActivity.this, WriteSMSActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
             }
         });
@@ -190,10 +189,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_inbox) {
             getSupportActionBar().setTitle("Inbox");
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_1, cars);
-            list.setAdapter(adapter);
+            initializeInboxDisplay();
         } else if (id == R.id.nav_sent) {
             getSupportActionBar().setTitle("Sent");
 
@@ -206,33 +202,11 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-//
-//    private class MyListAdapter extends ArrayAdapter<Message> {
-//        public ArrayList<Message> ArrayOfSMS;
-//
-//        public MyListAdapter(ArrayList<Message> ArrayOfSMS) {
-//            super(MainActivity.this, R.layout.sms_view);
-//            this.ArrayOfSMS = ArrayOfSMS;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            View itemView = convertView;
-//            if (itemView == null){
-//                Log.w("kok nulll", "itemView kosooong");
-//            }
-//
-//            Message currentSMS = ArrayOfSMS.get(position);
-//
-//            TextView phoneView = (TextView) itemView.findViewById(R.id.viewPhone);
-//            TextView smsView = (TextView) itemView.findViewById(R.id.viewSMS);
-//
-//            phoneView.setText(currentSMS.phone);
-//            smsView.setText(currentSMS.message);
-//
-//            return super.getView(position, convertView, parent);
-//        }
-//    }
 
+    public void initializeInboxDisplay(){
+        ArrayList <Message> ArrayOfSMS = mydbInbox.getAllInbox();
+        ArrayAdapter<Message> adapter = new MyListAdapter(this, ArrayOfSMS);
+        list.setAdapter(adapter);
+    }
 
 }

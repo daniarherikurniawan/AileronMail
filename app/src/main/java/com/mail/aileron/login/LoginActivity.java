@@ -41,7 +41,6 @@ import com.mail.aileron.aileronmail.MainActivity;
 import com.mail.aileron.aileronmail.R;
 import com.mail.aileron.database.DBHelperUser;
 import com.mail.aileron.database.DBTableCreator;
-import com.mail.aileron.test.Main3Activity;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

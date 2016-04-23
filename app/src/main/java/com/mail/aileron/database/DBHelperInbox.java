@@ -7,7 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.mail.aileron.aileronmail.MessageInbox;
+import com.mail.aileron.object.Message;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,6 @@ public class DBHelperInbox extends SQLiteOpenHelper {
     public static final String INBOX_TABLE_NAME = "inbox";
     public static final String INBOX_TABLE_ID= "id";
     public static final String INBOX_TABLE_NO_SENDER= "no_sender";
-    public static final String INBOX_COLUMN_NAME_SENDER= "name_sender";
     public static final String INBOX_COLUMN_MESSAGE= "message";
     public static final String INBOX_COLUMN_STATUS= "status";
     SQLiteDatabase db;
@@ -40,12 +39,11 @@ public class DBHelperInbox extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public boolean insertInbox (String no_sender, String name_sender, String message, String status)
+    public boolean insertInbox (String no_sender, String message, String status)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("no_sender", no_sender);
-        contentValues.put("name_sender", name_sender);
         contentValues.put("message", message);
         contentValues.put("status", status);
         db.insert("inbox", null, contentValues);
@@ -91,9 +89,9 @@ public class DBHelperInbox extends SQLiteOpenHelper {
                 new String[] { Integer.toString(id) });
     }
 
-    public ArrayList<MessageInbox> getAllInbox()
+    public ArrayList<Message> getAllInbox()
     {
-        ArrayList<MessageInbox> array_list = new ArrayList<MessageInbox>();
+        ArrayList<Message> array_list = new ArrayList<Message>();
 
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -103,13 +101,20 @@ public class DBHelperInbox extends SQLiteOpenHelper {
         while(res.isAfterLast() == false){;
             int id = Integer.parseInt(res.getString(res.getColumnIndex(INBOX_TABLE_ID)));
             String no_sender = (res.getString(res.getColumnIndex(INBOX_TABLE_NO_SENDER)));
-            String name_sender = (res.getString(res.getColumnIndex(INBOX_COLUMN_NAME_SENDER)));
             String message = (res.getString(res.getColumnIndex(INBOX_COLUMN_MESSAGE)));
             String status = (res.getString(res.getColumnIndex(INBOX_COLUMN_STATUS)));
-            MessageInbox msg  = new MessageInbox(id,no_sender,name_sender,message,status);
+            Message msg  = new Message(no_sender,message);
             array_list.add(msg);
             res.moveToNext();
         }
         return array_list;
+    }
+
+    public Message getMessage(int id) {
+        Cursor res = getData(id);
+        res.moveToFirst();
+        Message msg = new Message((res.getString(res.getColumnIndex(INBOX_TABLE_NO_SENDER))),
+                (res.getString(res.getColumnIndex(INBOX_COLUMN_MESSAGE))));
+        return msg;
     }
 }

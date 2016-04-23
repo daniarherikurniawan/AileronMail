@@ -7,8 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.mail.aileron.aileronmail.Message;
-import com.mail.aileron.aileronmail.MessageOutbox;
+import com.mail.aileron.object.Message;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +21,6 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
     public static final String OUTBOX_TABLE_NAME = "outbox";
     public static final String OUTBOX_TABLE_ID= "id";
     public static final String OUTBOX_TABLE_NO_RECEIVER= "no_receiver";
-    public static final String OUTBOX_COLUMN_NAME_RECEIVER= "name_receiver";
     public static final String OUTBOX_COLUMN_MESSAGE= "message";
     SQLiteDatabase db;
     private HashMap hp;
@@ -40,12 +38,11 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public boolean insertOutbox (String no_receiver, String name_receiver, String message)
+    public boolean insertOutbox (String no_receiver, String message)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("no_receiver", no_receiver);
-        contentValues.put("name_receiver", name_receiver);
         contentValues.put("message", message);
         db.insert("outbox", null, contentValues);
         return true;
@@ -63,12 +60,11 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
         return numRows;
     }
 
-    public boolean updateOutbox(int id, String no_receiver, String name_receiver, String message)
+    public boolean updateOutbox(int id, String no_receiver, String message)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("no_receiver", no_receiver);
-        contentValues.put("name_receiver", name_receiver);
         contentValues.put("message", message);
         db.update("outbox", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
         return true;
@@ -94,12 +90,20 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
         while(res.isAfterLast() == false){;
 
             String no_receiver = (res.getString(res.getColumnIndex(OUTBOX_TABLE_NO_RECEIVER)));
-            String name_receiver = (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE)));
+            String message = (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE)));
 
-            Message msg  = new Message(no_receiver,name_receiver);
+            Message msg  = new Message(no_receiver,message);
             array_list.add(msg);
             res.moveToNext();
         }
         return array_list;
+    }
+
+    public Message getMessage(int id) {
+        Cursor res = getData(id);
+        res.moveToFirst();
+        Message msg = new Message((res.getString(res.getColumnIndex(OUTBOX_TABLE_NO_RECEIVER))),
+                (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE))));
+        return msg;
     }
 }

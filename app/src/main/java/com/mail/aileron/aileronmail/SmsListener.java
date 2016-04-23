@@ -8,21 +8,26 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
+import com.mail.aileron.database.DBHelperInbox;
+
 /**
  * Created by daniar on 18/04/16.
  */
 public class SmsListener extends BroadcastReceiver {
 
     private SharedPreferences preferences;
+    private DBHelperInbox mydbInbox;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
         // TODO Auto-generated method stub
+        mydbInbox = new DBHelperInbox(context);
 
         if(intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")){
             Bundle bundle = intent.getExtras();           //---get the SMS message passed in---
             SmsMessage[] msgs = null;
-            String msg_from;
+            String msg_from = null;
             if (bundle != null){
                 //---retrieve the SMS message received---
                 try{
@@ -34,7 +39,8 @@ public class SmsListener extends BroadcastReceiver {
                         String msgBody = msgs[i].getMessageBody();
                     }
                     if (msgs.length > -1) {
-                        Toast.makeText(context, "Message recieved: " + msgs[0].getMessageBody(), Toast.LENGTH_LONG).show();
+                        mydbInbox.insertInbox(msg_from, msgs[0].getMessageBody(), "unread");
+                        Toast.makeText(context, "Message recieved: " + msgs[0].getMessageBody()+" "+msg_from.toString(), Toast.LENGTH_LONG).show();
                     }
                 }catch(Exception e){
 //                            Log.d("Exception caught",e.getMessage());
