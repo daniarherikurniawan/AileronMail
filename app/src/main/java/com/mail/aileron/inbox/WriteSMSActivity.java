@@ -17,11 +17,11 @@ public class WriteSMSActivity extends AppCompatActivity {
 
     EditText txtphoneNo;
     EditText txtMessage;
-    private DBHelperOutbox mydbSent;
+    private DBHelperOutbox mydbOutbox;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mydbSent = new DBHelperOutbox(this);
+        mydbOutbox = new DBHelperOutbox(this);
         setContentView(R.layout.activity_write_sms);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -30,14 +30,14 @@ public class WriteSMSActivity extends AppCompatActivity {
         txtphoneNo = (EditText) findViewById(R.id.editText1);
         txtMessage = (EditText) findViewById(R.id.editText2);
 
-
-
         Button sendButton = (Button) findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
                 sendSMSMessage();
+
+                mydbOutbox.insertOutbox(txtphoneNo.getText().toString(), "xxx",txtMessage.getText().toString());
             }
         });
     }

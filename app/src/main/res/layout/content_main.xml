@@ -10,7 +10,7 @@
     tools:showIn="@layout/app_bar_main">
 
     <ListView
-        android:id="@+id/listEmail"
+        android:id="@+id/listSMS"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ListView>
 </RelativeLayout>

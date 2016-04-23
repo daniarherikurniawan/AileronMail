@@ -18,4 +18,8 @@ public class MessageInbox {
         this.status = status;
     }
 
+    public String toString(){
+        return ""+id+" "+no_sender+" \n "+name_sender+" "+" \n "+message+" \n "+status;
+    }
+
 }

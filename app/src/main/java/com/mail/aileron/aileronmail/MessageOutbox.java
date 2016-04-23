@@ -16,4 +16,8 @@ public class MessageOutbox {
         this.message = message;
     }
 
+    public String toString(){
+        return ""+id+" "+no_receiver+" \n "+name_receiver+" "+" \n "+message+" ";
+    }
+
 }

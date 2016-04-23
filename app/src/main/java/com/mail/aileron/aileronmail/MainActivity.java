@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,12 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mail.aileron.database.DBHelperInbox;
+import com.mail.aileron.database.DBHelperOutbox;
 import com.mail.aileron.database.DBHelperUser;
 import com.mail.aileron.database.DBTableCreator;
 import com.mail.aileron.inbox.WriteSMSActivity;
@@ -31,28 +34,49 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private TextView msg;
     String[] cars ={"Camaro", "Lamborgini","Toyota", "Ferrari", "BMW"};
+    String[] cars2 ={"Suzuki", "Honda","Daihatsu", "GT R", "Nissan"};
     ListView list;
 
     private DBTableCreator mydbCreator;
     private DBHelperUser mydbUser ;
     private DBHelperInbox mydbInbox;
+    private DBHelperOutbox mydbOutbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mydbUser = new DBHelperUser(this);
         mydbInbox = new DBHelperInbox(this);
+        mydbOutbox = new DBHelperOutbox(this);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Inbox");
 
-        list = (ListView) findViewById(R.id.listEmail);
+        list = (ListView) findViewById(R.id.listSMS);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, cars);
         list.setAdapter(adapter);
 
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+                Toast.makeText(getApplicationContext(), "long click: " + pos, Toast.LENGTH_LONG).show();
+
+                return true;
+            }
+        });
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                                    long arg3) {
+                Toast.makeText(getApplicationContext(), "click: " + arg0, Toast.LENGTH_LONG).show();
+            }
+
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +89,9 @@ public class MainActivity extends AppCompatActivity
 //                Snackbar.make(view, "inbox : "+mydbInbox.getAllInbox().toString(), Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 //
+                Snackbar.make(view, "outbox : "+mydbOutbox.getAllOutbox().toString(), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
 //                Snackbar.make(view, "user : "+mydbUser.getAllUsers().toString(), Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 //                // creating required tables
@@ -146,7 +173,6 @@ public class MainActivity extends AppCompatActivity
             mydbUser.updateUser(email, "not_logged_in");
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
-//            Toast.makeText(getApplicationContext(), email, Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -162,8 +188,19 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_inbox) {
             getSupportActionBar().setTitle("Inbox");
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1, cars);
+            list.setAdapter(adapter);
         } else if (id == R.id.nav_sent) {
             getSupportActionBar().setTitle("Sent");
+            ArrayList<MessageOutbox> arrayOutbox = mydbOutbox.getAllOutbox();
+            Toast.makeText(getApplicationContext(), arrayOutbox.toString(), Toast.LENGTH_LONG);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1, cars2);
+            list.setAdapter(adapter);
+
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
