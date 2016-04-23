@@ -37,7 +37,13 @@ public class WriteSMSActivity extends AppCompatActivity {
                 finish();
                 sendSMSMessage();
 
-                mydbOutbox.insertOutbox(txtphoneNo.getText().toString(), "xxx",txtMessage.getText().toString());
+                String phoneNo = txtphoneNo.getText().toString();
+                String message = txtMessage.getText().toString();
+
+
+//                Toast.makeText(getApplicationContext(), "phoneNo "+phoneNo+" \n "+message, Toast.LENGTH_LONG).show();
+
+                mydbOutbox.insertOutbox(phoneNo, "xxx", message);
             }
         });
     }

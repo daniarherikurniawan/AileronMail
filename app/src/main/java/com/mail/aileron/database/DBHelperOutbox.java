@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.mail.aileron.aileronmail.Message;
 import com.mail.aileron.aileronmail.MessageOutbox;
 
 import java.util.ArrayList;
@@ -81,9 +82,9 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
                 new String[] { Integer.toString(id) });
     }
 
-    public ArrayList<MessageOutbox> getAllOutbox()
+    public ArrayList<Message> getAllOutbox()
     {
-        ArrayList<MessageOutbox> array_list = new ArrayList<MessageOutbox>();
+        ArrayList<Message> array_list = new ArrayList<Message>();
 
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -91,11 +92,11 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while(res.isAfterLast() == false){;
-            int id = Integer.parseInt(res.getString(res.getColumnIndex(OUTBOX_TABLE_ID)));
+
             String no_receiver = (res.getString(res.getColumnIndex(OUTBOX_TABLE_NO_RECEIVER)));
-            String name_receiver = (res.getString(res.getColumnIndex(OUTBOX_COLUMN_NAME_RECEIVER)));
-            String message = (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE)));
-            MessageOutbox msg  = new MessageOutbox(id,no_receiver,name_receiver, message);
+            String name_receiver = (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE)));
+
+            Message msg  = new Message(no_receiver,name_receiver);
             array_list.add(msg);
             res.moveToNext();
         }

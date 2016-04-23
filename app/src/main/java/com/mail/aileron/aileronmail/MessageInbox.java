@@ -22,4 +22,11 @@ public class MessageInbox {
         return ""+id+" "+no_sender+" \n "+name_sender+" "+" \n "+message+" \n "+status;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

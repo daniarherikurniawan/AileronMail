@@ -1,5 +1,6 @@
 package com.mail.aileron.aileronmail;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity
 //                Snackbar.make(view, "inbox : "+mydbInbox.getAllInbox().toString(), Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 //
-                Snackbar.make(view, "outbox : "+mydbOutbox.getAllOutbox().toString(), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "outbox : "+mydbOutbox.getAllOutbox().get(0).phone, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
 //                Snackbar.make(view, "user : "+mydbUser.getAllUsers().toString(), Snackbar.LENGTH_LONG)
@@ -194,11 +196,9 @@ public class MainActivity extends AppCompatActivity
             list.setAdapter(adapter);
         } else if (id == R.id.nav_sent) {
             getSupportActionBar().setTitle("Sent");
-            ArrayList<MessageOutbox> arrayOutbox = mydbOutbox.getAllOutbox();
-            Toast.makeText(getApplicationContext(), arrayOutbox.toString(), Toast.LENGTH_LONG);
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_1, cars2);
+            ArrayList <Message> ArrayOfSMS = mydbOutbox.getAllOutbox();
+            ArrayAdapter<Message> adapter = new MyListAdapter(this, ArrayOfSMS);
             list.setAdapter(adapter);
 
         }
@@ -206,4 +206,33 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+//
+//    private class MyListAdapter extends ArrayAdapter<Message> {
+//        public ArrayList<Message> ArrayOfSMS;
+//
+//        public MyListAdapter(ArrayList<Message> ArrayOfSMS) {
+//            super(MainActivity.this, R.layout.sms_view);
+//            this.ArrayOfSMS = ArrayOfSMS;
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            View itemView = convertView;
+//            if (itemView == null){
+//                Log.w("kok nulll", "itemView kosooong");
+//            }
+//
+//            Message currentSMS = ArrayOfSMS.get(position);
+//
+//            TextView phoneView = (TextView) itemView.findViewById(R.id.viewPhone);
+//            TextView smsView = (TextView) itemView.findViewById(R.id.viewSMS);
+//
+//            phoneView.setText(currentSMS.phone);
+//            smsView.setText(currentSMS.message);
+//
+//            return super.getView(position, convertView, parent);
+//        }
+//    }
+
+
 }
