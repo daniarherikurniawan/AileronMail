@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_inbox"
+            android:icon="@drawable/ic_menu_inbox"
+            android:title="Inbox" />
+        <item
+            android:id="@+id/nav_sent"
+            android:icon="@drawable/ic_menu_sent"
+            android:title="Sent" />
+    </group>
+
+    <item android:title="User Support">
+        <menu>
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_menu_help"
+                android:title="Help" />
+            <item
+                android:id="@+id/nav_report"
+                android:icon="@drawable/ic_menu_report"
+                android:title="Report" />
+        </menu>
+    </item>
+
+</menu>
