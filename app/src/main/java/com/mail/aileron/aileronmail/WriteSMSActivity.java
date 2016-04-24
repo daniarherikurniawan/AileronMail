@@ -1,6 +1,8 @@
-package com.mail.aileron.inbox;
+package com.mail.aileron.aileronmail;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
@@ -13,6 +15,8 @@ import android.widget.Toast;
 
 import com.mail.aileron.aileronmail.R;
 import com.mail.aileron.database.DBHelperOutbox;
+import com.mail.aileron.reader.ReadInbox;
+import com.mail.aileron.reader.ReadOutbox;
 
 public class WriteSMSActivity extends AppCompatActivity {
 
@@ -75,12 +79,29 @@ public class WriteSMSActivity extends AppCompatActivity {
                 smsManager.sendTextMessage(phoneNo, null, currentMsg, null, null);
                 Toast.makeText(getApplicationContext(), "SMS "+i+" sent", Toast.LENGTH_LONG).show();
                 mydbOutbox.insertOutbox(phoneNo, currentMsg);
+
+                finish();
+                Intent intent = new Intent(WriteSMSActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "SMS faild, please try again.", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         }
     }
+
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        Intent intent = new Intent(WriteSMSActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+    }
+
 
     private String prepareTheMessage(String plainMessage){
         String message = "";

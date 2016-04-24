@@ -35,9 +35,14 @@ public class MyListAdapter extends ArrayAdapter<Message> {
 
         TextView phoneView = (TextView) itemView.findViewById(R.id.viewPhone);
         TextView smsView = (TextView) itemView.findViewById(R.id.viewSMS);
+        TextView statusView = (TextView) itemView.findViewById(R.id.msgStatus);
+        TextView id = (TextView) itemView.findViewById(R.id.idMsg);
 
         phoneView.setText(currentSMS.phone);
         String message = currentSMS.message;
+        statusView.setText(currentSMS.status);
+        id.setText(currentSMS.id);
+
         message = message.replaceAll("(\\r|\\n)", " ");
         if (message.length()>25){
             smsView.setText(message.substring(0,25)+" ...");

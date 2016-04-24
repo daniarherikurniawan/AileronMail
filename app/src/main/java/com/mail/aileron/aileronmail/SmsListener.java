@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.mail.aileron.database.DBHelperInbox;
@@ -39,11 +40,11 @@ public class SmsListener extends BroadcastReceiver {
                         String msgBody = msgs[i].getMessageBody();
                     }
                     if (msgs.length > -1) {
-                        mydbInbox.insertInbox(msg_from, msgs[0].getMessageBody(), "unread");
-                        Toast.makeText(context, "Message recieved: " + msgs[0].getMessageBody()+" "+msg_from.toString(), Toast.LENGTH_LONG).show();
+                        mydbInbox.insertInbox(msg_from, msgs[0].getMessageBody());
+                        Toast.makeText(context, " Message recieved from: " +msg_from.toString(), Toast.LENGTH_LONG).show();
                     }
                 }catch(Exception e){
-//                            Log.d("Exception caught",e.getMessage());
+                            Log.d("Exception caught", e.getMessage());
                 }
             }
         }

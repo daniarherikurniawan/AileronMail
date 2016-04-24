@@ -1,9 +1,17 @@
 package com.mail.aileron.aileronmail;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,7 +31,7 @@ import com.mail.aileron.database.DBHelperInbox;
 import com.mail.aileron.database.DBHelperOutbox;
 import com.mail.aileron.database.DBHelperUser;
 import com.mail.aileron.database.DBTableCreator;
-import com.mail.aileron.inbox.WriteSMSActivity;
+import com.mail.aileron.dialog.DialogKeyGeneration;
 import com.mail.aileron.login.LoginActivity;
 import com.mail.aileron.object.Message;
 import com.mail.aileron.reader.ReadInbox;
@@ -40,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private DBHelperUser mydbUser ;
     private DBHelperInbox mydbInbox;
     private DBHelperOutbox mydbOutbox;
+    private int idSelectedMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,31 +63,30 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Inbox");
 
         list = (ListView) findViewById(R.id.listSMS);
-        initializeInboxDisplay();
+        registerForContextMenu(list);
+        refreshInboxDisplay();
 
-
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int pos, long id) {
-                Toast.makeText(getApplicationContext(), "long click: " + pos, Toast.LENGTH_LONG).show();
-
-                return true;
-            }
-        });
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
+            public void onItemClick(AdapterView<?> arg0, View view, int pos,
                                     long id) {
                 Intent intent;
+                TextView idView = ((TextView) view.findViewById(R.id.idMsg));
+//                Toast.makeText(getApplicationContext(), " "+ tv.getText() , Toast.LENGTH_SHORT).show();
+
                 if (getSupportActionBar().getTitle() == "Inbox") {
+
+                    finish();
                     intent = new Intent(MainActivity.this, ReadInbox.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+
                 } else {
                     intent = new Intent(MainActivity.this, ReadOutbox.class);
                 }
-
-                intent.putExtra("id", "" + id);
+                intent.putExtra("id", "" + idView.getText());
                 startActivity(intent);
             }
 
@@ -89,21 +97,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-//                ArrayList<Message> arrayInbox = mydbInbox.getAllInbox();
-//        Toast.makeText(getApplicationContext(), arrayInbox.toString(), Toast.LENGTH_LONG);
-
-//                Snackbar.make(view, "inbox : "+mydbInbox.getAllInbox().toString(), Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//
-//                Snackbar.make(view, "user : "+mydbUser.getAllUsers().toString(), Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//                // creating required tables
-//                db.execSQL(CREATE_TABLE_TODO);
-//                db.execSQL(CREATE_TABLE_TAG);
-//                db.execSQL(CREATE_TABLE_TODO_TAG);
-//
-
+                finish();
                 Intent intent = new Intent(MainActivity.this, WriteSMSActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
             }
         });
@@ -143,12 +140,10 @@ public class MainActivity extends AppCompatActivity
             }, 3 * 1000);
 
         }
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
         TextView userEmail = (TextView) findViewById(R.id.userEmail);
@@ -158,9 +153,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -175,6 +167,14 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_generate_key){
+            FragmentManager fm = getFragmentManager();
+            DialogKeyGeneration dialogFragment = new DialogKeyGeneration();
+            dialogFragment.show(fm, "New Key");
+        } else if (id == R.id.action_show_current_key){
+            FragmentManager fm = getFragmentManager();
+            DialogKeyGeneration dialogFragment = new DialogKeyGeneration();
+            dialogFragment.show(fm, "Current Key");
         }
 
         return super.onOptionsItemSelected(item);
@@ -186,27 +186,70 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-
         if (id == R.id.nav_inbox) {
             getSupportActionBar().setTitle("Inbox");
-            initializeInboxDisplay();
+            refreshInboxDisplay();
         } else if (id == R.id.nav_sent) {
-            getSupportActionBar().setTitle("Sent");
-
-            ArrayList <Message> ArrayOfSMS = mydbOutbox.getAllOutbox();
-            ArrayAdapter<Message> adapter = new MyListAdapter(this, ArrayOfSMS);
-            list.setAdapter(adapter);
-
+            getSupportActionBar().setTitle("Outbox");
+            refreshOutboxDisplay();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    public void initializeInboxDisplay(){
+    public void refreshInboxDisplay(){
         ArrayList <Message> ArrayOfSMS = mydbInbox.getAllInbox();
         ArrayAdapter<Message> adapter = new MyListAdapter(this, ArrayOfSMS);
         list.setAdapter(adapter);
+    }
+
+
+    public void refreshOutboxDisplay(){
+        ArrayList <Message> ArrayOfSMS = mydbOutbox.getAllOutbox();
+        ArrayAdapter<Message> adapter = new MyListAdapter(this, ArrayOfSMS);
+        list.setAdapter(adapter);
+    }
+    /**
+     * MENU
+     */
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+
+        idSelectedMsg = Integer.parseInt(((TextView) info.targetView.findViewById(R.id.idMsg)).getText().toString());
+        if (v.getId()==R.id.listSMS) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_list, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch(item.getItemId()) {
+            case R.id.decrypt:
+                // add stuff here
+                return true;
+            case R.id.verify:
+                // edit stuff here
+                return true;
+            case R.id.delete:
+                if (getSupportActionBar().getTitle() == "Inbox") {
+                    mydbInbox.deleteInbox(idSelectedMsg);
+                    refreshInboxDisplay();
+                    Toast.makeText(getApplicationContext(), "Successfully deleted! ", Toast.LENGTH_SHORT).show();
+                } else {
+                    mydbOutbox.deleteOutbox(idSelectedMsg);
+                    refreshOutboxDisplay();
+                    Toast.makeText(getApplicationContext(), "Successfully deleted! ", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
 }

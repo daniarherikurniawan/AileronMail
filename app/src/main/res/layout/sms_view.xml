@@ -26,4 +26,23 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/viewPhone"
         android:layout_toEndOf="@+id/viewPhone" />
+
+    <TextView
+        android:layout_width="10dp"
+        android:layout_height="wrap_content"
+        android:text="id"
+        android:id="@+id/idMsg"
+        android:layout_alignTop="@+id/viewSMS"
+        android:layout_toLeftOf="@+id/viewSMS"
+        android:layout_toStartOf="@+id/viewSMS"
+        android:visibility="invisible" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/msgStatus"
+        android:layout_alignBottom="@+id/viewSMS"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

@@ -28,12 +28,12 @@ public class ReadOutbox  extends AppCompatActivity {
         Intent intent = getIntent();
         int id = Integer.parseInt(intent.getStringExtra("id"));
 
-        Message msg = mydbOutbox.getMessage(id+1);
+        Message msg = mydbOutbox.getMessage(id);
 
-        phoneView = (TextView) findViewById(R.id.no_receiver);
+        getSupportActionBar().setTitle("Sent to: " +msg.phone);
         messageView = (TextView) findViewById(R.id.message_outbox);
 
-        phoneView.setText(msg.phone);
+//        phoneView.setText(msg.phone);
         messageView.setText(msg.message);
     }
 }

@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.mail.aileron.object.Message;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -21,6 +23,7 @@ public class DBHelperInbox extends SQLiteOpenHelper {
     public static final String INBOX_TABLE_NAME = "inbox";
     public static final String INBOX_TABLE_ID= "id";
     public static final String INBOX_TABLE_NO_SENDER= "no_sender";
+    public static final String INBOX_TABLE_TIME= "time";
     public static final String INBOX_COLUMN_MESSAGE= "message";
     public static final String INBOX_COLUMN_STATUS= "status";
     SQLiteDatabase db;
@@ -39,20 +42,24 @@ public class DBHelperInbox extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public boolean insertInbox (String no_sender, String message, String status)
+    public boolean insertInbox (String no_sender, String message)
     {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = sdf.format(new Date());
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("no_sender", no_sender);
         contentValues.put("message", message);
-        contentValues.put("status", status);
+        contentValues.put("time", date);
+        contentValues.put("status", "new");
         db.insert("inbox", null, contentValues);
         return true;
     }
 
     public Cursor getData(int id){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from inbox where id="+Integer.toString(id)+"", null );
+        Cursor res =  db.rawQuery("select * from inbox where id=" + Integer.toString(id) + "", null);
         return res;
     }
 
@@ -81,12 +88,11 @@ public class DBHelperInbox extends SQLiteOpenHelper {
         return res.getCount() == 1;
     }
 
-    public Integer deleteInbox(int id)
+    public boolean deleteInbox(int id)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete("inbox",
-                "id = ? ",
-                new String[] { Integer.toString(id) });
+        db.delete("inbox", "id=" + id, null);
+        return true;
     }
 
     public ArrayList<Message> getAllInbox()
@@ -95,7 +101,7 @@ public class DBHelperInbox extends SQLiteOpenHelper {
 
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from inbox", null );
+        Cursor res =  db.rawQuery("select * from inbox ORDER BY datetime(time) DESC", null);
         res.moveToFirst();
 
         while(res.isAfterLast() == false){;
@@ -103,7 +109,7 @@ public class DBHelperInbox extends SQLiteOpenHelper {
             String no_sender = (res.getString(res.getColumnIndex(INBOX_TABLE_NO_SENDER)));
             String message = (res.getString(res.getColumnIndex(INBOX_COLUMN_MESSAGE)));
             String status = (res.getString(res.getColumnIndex(INBOX_COLUMN_STATUS)));
-            Message msg  = new Message(no_sender,message);
+            Message msg  = new Message(no_sender,message, id, status);
             array_list.add(msg);
             res.moveToNext();
         }
@@ -114,7 +120,16 @@ public class DBHelperInbox extends SQLiteOpenHelper {
         Cursor res = getData(id);
         res.moveToFirst();
         Message msg = new Message((res.getString(res.getColumnIndex(INBOX_TABLE_NO_SENDER))),
-                (res.getString(res.getColumnIndex(INBOX_COLUMN_MESSAGE))));
+                (res.getString(res.getColumnIndex(INBOX_COLUMN_MESSAGE))),
+                Integer.parseInt(res.getString(res.getColumnIndex(INBOX_TABLE_ID))),
+                (res.getString(res.getColumnIndex(INBOX_COLUMN_STATUS))));
         return msg;
+    }
+
+    public void markInboxAsRead(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("status", "");
+        db.update("inbox", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
     }
 }

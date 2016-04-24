@@ -25,9 +25,6 @@
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.mail.aileron.test.Main2Activity"
-            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver android:name=".SmsListener">
             <intent-filter>
@@ -36,7 +33,7 @@
         </receiver>
 
         <activity
-            android:name="com.mail.aileron.inbox.WriteSMSActivity"
+            android:name=".WriteSMSActivity"
             android:label="@string/title_activity_write_sms"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.mail.aileron.reader.ReadInbox"></activity>

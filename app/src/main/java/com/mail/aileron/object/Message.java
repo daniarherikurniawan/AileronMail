@@ -6,10 +6,14 @@ package com.mail.aileron.object;
 public class Message {
     public String phone;
     public String message;
+    public String id;
+    public String status;
 
-    public Message(String phone, String message) {
+    public Message(String phone, String message, int id, String status) {
         this.phone = phone;
         this.message = message;
+        this.id = ""+id;
+        this.status = status;
     }
 
 }

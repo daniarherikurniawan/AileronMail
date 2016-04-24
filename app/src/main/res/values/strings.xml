@@ -5,6 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="action_generate_key">Generate New Key</string>
     <string name="action_logout">Logout</string>
     <string name="title_activity_login">Sign in</string>
 
@@ -23,4 +24,5 @@
     </string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_write_sms">WriteSMSActivity</string>
+    <string name="action_show_current_key">Show Current Key</string>
 </resources>

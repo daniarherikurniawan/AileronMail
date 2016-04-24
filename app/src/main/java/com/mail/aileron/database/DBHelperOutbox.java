@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.mail.aileron.object.Message;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -20,6 +22,7 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "Aileron.db";
     public static final String OUTBOX_TABLE_NAME = "outbox";
     public static final String OUTBOX_TABLE_ID= "id";
+    public static final String OUTBOX_TABLE_TIME= "time";
     public static final String OUTBOX_TABLE_NO_RECEIVER= "no_receiver";
     public static final String OUTBOX_COLUMN_MESSAGE= "message";
     SQLiteDatabase db;
@@ -40,9 +43,13 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
 
     public boolean insertOutbox (String no_receiver, String message)
     {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = sdf.format(new Date());
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("no_receiver", no_receiver);
+        contentValues.put("time", date);
         contentValues.put("message", message);
         db.insert("outbox", null, contentValues);
         return true;
@@ -75,7 +82,7 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete("outbox",
                 "id = ? ",
-                new String[] { Integer.toString(id) });
+                new String[] {String.valueOf(id)});
     }
 
     public ArrayList<Message> getAllOutbox()
@@ -84,15 +91,15 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
 
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from outbox", null );
+        Cursor res =  db.rawQuery( "select * from outbox ORDER BY datetime(time) DESC", null );
         res.moveToFirst();
 
         while(res.isAfterLast() == false){;
-
-            String no_receiver = (res.getString(res.getColumnIndex(OUTBOX_TABLE_NO_RECEIVER)));
+            int id = Integer.parseInt(res.getString(res.getColumnIndex(OUTBOX_TABLE_ID)));
+            String no_receiver =(res.getString(res.getColumnIndex(OUTBOX_TABLE_NO_RECEIVER)));
             String message = (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE)));
 
-            Message msg  = new Message(no_receiver,message);
+            Message msg  = new Message(no_receiver,message, id, "");
             array_list.add(msg);
             res.moveToNext();
         }
@@ -103,7 +110,9 @@ public class DBHelperOutbox extends SQLiteOpenHelper {
         Cursor res = getData(id);
         res.moveToFirst();
         Message msg = new Message((res.getString(res.getColumnIndex(OUTBOX_TABLE_NO_RECEIVER))),
-                (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE))));
+                (res.getString(res.getColumnIndex(OUTBOX_COLUMN_MESSAGE))),
+                Integer.parseInt(res.getString(res.getColumnIndex(OUTBOX_TABLE_ID))),
+                "");
         return msg;
     }
 }
