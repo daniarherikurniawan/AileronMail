@@ -12,7 +12,7 @@ import java.math.BigInteger;
 
 /**
  *
- * @author 
+ * @author
  */
 public class Point implements Serializable{
     private BigInteger x;
@@ -28,7 +28,7 @@ public class Point implements Serializable{
 
     }
 
-    
+
     public BigInteger getX() {
         return x;
     }
@@ -40,13 +40,13 @@ public class Point implements Serializable{
     public BigInteger getY() {
         return y;
     }
-    
+
     /**
      *
      * @return
      */
     @Override
     public String toString() {
-        return new StringBuffer("{\n\t\t" + x + ",\n\t\t" + y+"\n\t}" ).toString(); 
+        return new StringBuffer("{\n\t\t" + x + ",\n\t\t" + y+"\n\t}" ).toString();
     }
 }
