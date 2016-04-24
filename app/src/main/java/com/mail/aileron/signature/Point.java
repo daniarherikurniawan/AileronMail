@@ -1,4 +1,4 @@
-package ellipticcurveds;
+package com.mail.aileron.signature;
 
 
 import java.io.Serializable;

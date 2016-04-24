@@ -15,12 +15,17 @@ import com.mail.aileron.aileronmail.MainActivity;
 import com.mail.aileron.aileronmail.R;
 import com.mail.aileron.database.DBHelperInbox;
 import com.mail.aileron.database.DBHelperOutbox;
+import com.mail.aileron.database.DBHelperUser;
 import com.mail.aileron.object.Message;
+import com.mail.aileron.signature.EllipticCurveDS;
+import com.mail.aileron.signature.Point;
+
+import java.math.BigInteger;
 
 /**
  * Created by daniar on 24/04/16.
  */
-public class DialogSetPubKey extends DialogFragment {
+public class DialogVerifySign extends DialogFragment {
     String tag;
     String title;
     int id;
@@ -28,6 +33,10 @@ public class DialogSetPubKey extends DialogFragment {
 
     private DBHelperInbox mydbInbox;
     private DBHelperOutbox mydbOutbox;
+    private EllipticCurveDS digitalSignature;
+    private DBHelperUser mydbUser ;
+    private EditText pub_key_x;
+    private EditText pub_key_y;
 
     public void setId(int id) {
         this.id = id;
@@ -37,13 +46,17 @@ public class DialogSetPubKey extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.dialog_set_pub_key, container, false);
-        EditText pub_key = (EditText) rootView.findViewById(R.id.set_public_key);
+        pub_key_x = (EditText) rootView.findViewById(R.id.set_public_key_x);
+        pub_key_y  = (EditText) rootView.findViewById(R.id.set_public_key_y);
 
         mydbInbox = new DBHelperInbox(rootView.getContext());
         mydbOutbox = new DBHelperOutbox(rootView.getContext());
+        digitalSignature = new EllipticCurveDS();
+        mydbUser = new DBHelperUser(rootView.getContext());
 
         getDialog().setTitle(title);
-        pub_key.setText("55555");
+        pub_key_x.setText(mydbUser.getPubKeyX());
+        pub_key_y.setText(mydbUser.getPubKeyY());
 
 
         if(tag == "Inbox")
@@ -62,11 +75,15 @@ public class DialogSetPubKey extends DialogFragment {
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.setTitle("Verification");
 
-                if(isSignatured(msg.message)){
-                    alertDialog.setMessage("The signature "+getSignature(msg.message)+" is valid");
-                }else{
-                    alertDialog.setMessage("There is no signature in this message");
-                }
+                String message = msg.getContentMessage();
+                Point signature = msg.getSignature();
+                Point pubKey = new Point(new BigInteger(pub_key_x.getText().toString())
+                        , new BigInteger(pub_key_y.getText().toString()));
+
+                String verification = digitalSignature.signatureVerification(message, signature, pubKey);
+
+                alertDialog.setMessage("The signature "+(msg.getSignature())+" is "+verification);
+
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -89,13 +106,4 @@ public class DialogSetPubKey extends DialogFragment {
         this.tag = tag;
     }
 
-    public String getSignature(String plainMessage){
-        int startIdx = plainMessage.lastIndexOf("[Signature:")+11;
-        int endIdx = plainMessage.lastIndexOf("]");
-        return plainMessage.substring(startIdx,endIdx);
-    }
-
-    public boolean isSignatured(String plainMessage){
-        return plainMessage.contains("[Signature:") && plainMessage.contains("]");
-    }
 }

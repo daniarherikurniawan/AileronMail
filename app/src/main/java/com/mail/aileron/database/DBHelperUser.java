@@ -17,6 +17,9 @@ public class DBHelperUser extends SQLiteOpenHelper {
     public static final String USER_COLUMN_EMAIL= "email";
     public static final String USER_COLUMN_PASSWORD= "password";
     public static final String USER_COLUMN_STATUS= "status";
+    public static final String USER_COLUMN_PRI_KEY= "pri_key";
+    public static final String USER_COLUMN_PUB_KEY_X= "pub_key_x";
+    public static final String USER_COLUMN_PUB_KEY_Y= "pub_key_y";
     SQLiteDatabase db;
     private HashMap hp;
 
@@ -66,6 +69,18 @@ public class DBHelperUser extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean updateNewKey(String pri_key,  String pub_key_x, String pub_key_y)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("pri_key", pri_key);
+        contentValues.put("pub_key_x", pub_key_x);
+        contentValues.put("pub_key_y", pub_key_y);
+        db.update("user", contentValues, "status = ? ", new String[] { "logged_in" } );
+        return true;
+    }
+
+
     public boolean isUserRegistered (String email, String password)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -111,6 +126,50 @@ public class DBHelperUser extends SQLiteOpenHelper {
             res.moveToNext();
         }
         return array_list;
+    }
+
+
+    public Cursor getData(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery("select * from user LIMIT 1", null);
+        return res;
+    }
+
+    public String getPriKey() {
+        Cursor res = getData();
+        res.moveToFirst();
+        String value = new String(res.getString(res.getColumnIndex(USER_COLUMN_PRI_KEY)));
+        return value;
+    }
+
+
+    public String getPubKeyX() {
+        Cursor res = getData();
+        res.moveToFirst();
+        String value = new String(res.getString(res.getColumnIndex(USER_COLUMN_PUB_KEY_X)));
+        return value;
+    }
+
+    public String getPubKeyY() {
+        Cursor res = getData();
+        res.moveToFirst();
+        String value = new String(res.getString(res.getColumnIndex(USER_COLUMN_PUB_KEY_Y)));
+        return value;
+    }
+
+    public boolean isHasKey(){
+        ArrayList<String> array_list = new ArrayList<String>();
+
+        //hp = new HashMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from user", null );
+        res.moveToFirst();
+
+        if (res.getCount() != 0){
+            return res.getString(res.getColumnIndex(USER_COLUMN_PRI_KEY)) != null;
+        }else{
+            return false;
+        }
     }
 
     public String getEmail()

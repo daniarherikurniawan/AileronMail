@@ -1,5 +1,4 @@
-package ellipticcurveds;
-import static ellipticcurveds.EllipticCurveDS.message;
+package com.mail.aileron.signature;
 import java.math.*;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,19 +12,27 @@ import java.math.*;
  */
 public class SHA1Algorithm {
 
-        static BigInteger bufferA = new BigInteger("67452301", 16);                 //declare bigint in hex
-        static BigInteger bufferB = new BigInteger("EFCDAB89", 16);
-        static BigInteger bufferC = new BigInteger("98BADCFE", 16);
-        static BigInteger bufferD = new BigInteger("10325476", 16);
-        static BigInteger bufferE = new BigInteger("C3D2E1F0", 16);
-        static BigInteger[] roundConstant = {
-            new BigInteger("5A827999", 16),
-            new BigInteger("6ED9EBA1", 16),
-            new BigInteger("8F1BBCDC", 16),
-            new BigInteger("CA62C1D6", 16),
-        };
-        static final BigInteger messageLength = new BigInteger(message.length() + "");
-        static BigInteger multipleOf = BigInteger.ONE.add(BigInteger.valueOf(64).add(messageLength.multiply(BigInteger.valueOf(8))).divide(BigInteger.valueOf(512)));
+
+    private BigInteger bufferA = new BigInteger("67452301", 16);                 //declare bigint in hex
+    private BigInteger bufferB = new BigInteger("EFCDAB89", 16);
+    private BigInteger bufferC = new BigInteger("98BADCFE", 16);
+    private BigInteger bufferD = new BigInteger("10325476", 16);
+    private BigInteger bufferE = new BigInteger("C3D2E1F0", 16);
+    private BigInteger[] roundConstant = {
+        new BigInteger("5A827999", 16),
+        new BigInteger("6ED9EBA1", 16),
+        new BigInteger("8F1BBCDC", 16),
+        new BigInteger("CA62C1D6", 16),
+    };
+    private String message;
+    private BigInteger messageLength ;
+    private BigInteger multipleOf;
+
+    public SHA1Algorithm(String message) {
+        this.message = message;
+        messageLength = new BigInteger(message.length() + "");
+        multipleOf = BigInteger.ONE.add(BigInteger.valueOf(64).add(messageLength.multiply(BigInteger.valueOf(8))).divide(BigInteger.valueOf(512)));
+    }
 
     public String toBigInt(String message) {
         BigInteger tempMessageLength = messageLength;
@@ -99,7 +106,7 @@ public class SHA1Algorithm {
         BigInteger[] wordBigTemp = new BigInteger[64];
         BigInteger[] wordBig = new BigInteger[80];
         //------------ complex looping process --------------
-        for (int i=0; i<multipleOf.intValueExact(); i++) {
+        for (int i=0; i<multipleOf.intValue(); i++) {
             //-------------- split blockmessage to 16 blocks -----------
             //-------- 0 until 15 -------
             //System.out.println("sip1");
@@ -108,7 +115,9 @@ public class SHA1Algorithm {
                 BigInteger wordTemp = BigInteger.ZERO;
                 wordBig[blockCount] = BigInteger.ZERO;
                 for (int innerBlock=0; innerBlock<4; innerBlock++) {
-                    wordBlockTemp[blockCount*4 + innerBlock] = blockMessage[i].substring(0+(blockCount*4 + innerBlock)*8, 8+(blockCount*4 + innerBlock)*8); //split the block message
+                    wordBlockTemp[blockCount*4 + innerBlock] = blockMessage[i].substring(0+
+                            (blockCount*4 + innerBlock)*8,
+                            8+(blockCount*4 + innerBlock)*8); //split the block message
                     wordBigTemp[blockCount*4 + innerBlock] = new BigInteger(wordBlockTemp[blockCount*4 + innerBlock], 2); //string to bigint
                     wordTemp = (wordBigTemp[blockCount*4 + innerBlock].and(new BigInteger("000000FF", 16))).shiftLeft(24 - innerBlock * 8);
                     wordBig[blockCount] = wordBig[blockCount].or(wordTemp);

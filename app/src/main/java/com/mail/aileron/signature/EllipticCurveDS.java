@@ -4,7 +4,8 @@
  * and open the template in the editor.
  */
 
-package ellipticcurveds;
+package com.mail.aileron.signature;
+
 
 import java.math.*;
 import java.util.Random;
@@ -15,29 +16,33 @@ import java.util.Random;
  */
 
 public class EllipticCurveDS {
-        static final String message = "asdksjlekl13m2l1m32l1melm21kdm12kmeklm21eklm21dm1dm1dm12kldm1lkdmlkm21d2m12m12m1l";
+//        static final String message = "asdksjlekl13m2l1m32l1melm21kdm12kmeklm21eklm21dm1dm1dm12kldm1lkdmlkm21d2m12m12m1l";
 
         //----------- curve parameters ------------
         static BigInteger primeNumber = new BigInteger("6271");
         static BigInteger a = new BigInteger("2333");
         static BigInteger b = new BigInteger("1111");
-	static BigInteger n = new BigInteger("6271");
-        static Point basis = new Point(new BigInteger("6"), new BigInteger("491"));
+	    static BigInteger n = new BigInteger("6271");
+        static Point basis;
         //----------- integer for maximum random number of private key generation -------------
         static BigInteger nPrivate = new BigInteger("6271");
 
+    public EllipticCurveDS() {
+        basis  = new Point(new BigInteger("6"), new BigInteger("491"));
+    }
+
     public static BigInteger generatePrivateKey() {
-	Random rand = new Random();
-	BigInteger result = new BigInteger(nPrivate.bitLength(), rand);
+        Random rand = new Random();
+        BigInteger result = new BigInteger(nPrivate.bitLength(), rand);
 
-	while( result.compareTo(BigInteger.valueOf(1000)) <= 0) {
-            result = new BigInteger(nPrivate.bitLength(), rand);
-	}
+        while( result.compareTo(BigInteger.valueOf(1000)) <= 0) {
+                result = new BigInteger(nPrivate.bitLength(), rand);
+        }
 
-	while( result.compareTo(nPrivate) >= 0) {
-            result = new BigInteger(nPrivate.bitLength(), rand);
-	}
-	return result;
+        while( result.compareTo(nPrivate) >= 0) {
+                result = new BigInteger(nPrivate.bitLength(), rand);
+        }
+        return result;
     }
 
     public Point generatePublicKey(BigInteger priKey) {
@@ -152,7 +157,7 @@ public class EllipticCurveDS {
         return new Point(leftSignature, rightSignature);
     }
 
-    public Point validSignatureGeneration(String hashInput, BigInteger priKey, Point pubKey) {
+    public Point validSignatureGeneration(String message, String hashInput, BigInteger priKey, Point pubKey) {
         //----------- validation of generation message to be able to be validated, not really used anymore --------------
         Point signature;
         String verification = null;
@@ -208,7 +213,7 @@ public class EllipticCurveDS {
             }
         }
 
-        SHA1Algorithm sha1Hash = new SHA1Algorithm();
+        SHA1Algorithm sha1Hash = new SHA1Algorithm(message);
         String hash = sha1Hash.computeHash(message);
         BigInteger hashBig = new BigInteger(hash, 16);
         try {
@@ -274,23 +279,23 @@ public class EllipticCurveDS {
     }
 
     public Point computeSignature(String message, BigInteger priKey, Point pubKey) {
-
         //------- compute SHA1 ----------
-        SHA1Algorithm sha1 = new SHA1Algorithm();
+        SHA1Algorithm sha1 = new SHA1Algorithm(message);
         String hashOutput = sha1.computeHash(message);
 
         //----------- compute digital signature elliptic curve -------------
         EllipticCurveDS digitalSignature = new EllipticCurveDS();
-        Point signature = digitalSignature.validSignatureGeneration(hashOutput, priKey, pubKey);
+        Point signature = digitalSignature.validSignatureGeneration(message, hashOutput, priKey, pubKey);
 
         return signature;
     }
 
     public static void main(String[] args) {
+        String message = "hola";
         EllipticCurveDS digitalSignature = new EllipticCurveDS();
 
         //----------- compute private and public key -------------
-	BigInteger priKey = generatePrivateKey();
+	    BigInteger priKey = generatePrivateKey();
         Point pubKey = digitalSignature.generatePublicKey(priKey);
 
         //----------- compute the signature of message -----------

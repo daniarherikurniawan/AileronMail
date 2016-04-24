@@ -1,17 +1,13 @@
 package com.mail.aileron.aileronmail;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -33,7 +29,7 @@ import com.mail.aileron.database.DBHelperOutbox;
 import com.mail.aileron.database.DBHelperUser;
 import com.mail.aileron.database.DBTableCreator;
 import com.mail.aileron.dialog.DialogKeyGeneration;
-import com.mail.aileron.dialog.DialogSetPubKey;
+import com.mail.aileron.dialog.DialogVerifySign;
 import com.mail.aileron.login.LoginActivity;
 import com.mail.aileron.object.Message;
 import com.mail.aileron.reader.ReadEncryptedSMS;
@@ -264,11 +260,25 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 return true;
             case R.id.verify:
-                FragmentManager fm = getFragmentManager();
-                DialogSetPubKey dialogFragment = new DialogSetPubKey();
-                dialogFragment.setId(idSelectedMsg);
-                dialogFragment.setTag(getSupportActionBar().getTitle().toString());
-                dialogFragment.show(fm, "Set Public Key");
+                Message msg;
+                if (getSupportActionBar().getTitle() == "Inbox") {
+                    msg = mydbInbox.getMessage(idSelectedMsg);
+                } else {
+                    msg = mydbOutbox.getMessage(idSelectedMsg);
+                }
+
+                if((msg.isSignatured())){
+                    FragmentManager fm = getFragmentManager();
+                    DialogVerifySign dialogFragment = new DialogVerifySign();
+                    dialogFragment.setId(idSelectedMsg);
+                    dialogFragment.setTag(getSupportActionBar().getTitle().toString());
+                    dialogFragment.show(fm, "Set Public Key");
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.setMessage("There is no signature in this message");
+                    alertDialog.show();
+                }
                 return true;
             case R.id.delete:
                 if (getSupportActionBar().getTitle() == "Inbox") {

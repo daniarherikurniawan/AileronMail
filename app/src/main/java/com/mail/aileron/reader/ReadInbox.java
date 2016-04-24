@@ -20,6 +20,7 @@ public class ReadInbox extends AppCompatActivity {
     TextView messageView;
     private DBHelperInbox mydbInbox;
     Message msg;
+    int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class ReadInbox extends AppCompatActivity {
         setContentView(R.layout.activity_read_inbox);
 
         Intent intent = getIntent();
-        int id = Integer.parseInt(intent.getStringExtra("id"));
+        id = Integer.parseInt(intent.getStringExtra("id"));
 
         msg = mydbInbox.getMessage(id);
         getSupportActionBar().setTitle("Received from: " +msg.phone);
@@ -49,8 +50,6 @@ public class ReadInbox extends AppCompatActivity {
                 finish();
                 Intent intent = new Intent(ReadInbox.this, WriteSMSActivity.class);
                 intent.putExtra("no_receiver",msg.phone);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
             }
         });

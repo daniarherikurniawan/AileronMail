@@ -31,7 +31,7 @@
         android:layout_alignParentStart="true"
         android:textAlignment="textStart"
         android:singleLine="false"
-        android:maxLength="240"
+        android:maxLength="126"
         android:lines="20" />
 
     <Button
