@@ -21,4 +21,16 @@
         android:layout_marginLeft="20dp"
         />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="reply"
+        android:id="@+id/reply_btn"
+        android:background="?attr/colorPrimary"
+        android:textColor="#ffffff"
+        android:layout_marginTop="66dp"
+        android:layout_below="@+id/message_inbox"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

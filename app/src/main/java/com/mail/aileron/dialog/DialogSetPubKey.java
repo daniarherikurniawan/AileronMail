@@ -61,7 +61,12 @@ public class DialogSetPubKey extends DialogFragment {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(rootView.getContext());
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.setTitle("Verification");
-                alertDialog.setMessage("The signature "+getSignature(msg.message)+" is valid");
+
+                if(isSignatured(msg.message)){
+                    alertDialog.setMessage("The signature "+getSignature(msg.message)+" is valid");
+                }else{
+                    alertDialog.setMessage("There is no signature in this message");
+                }
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -88,5 +93,9 @@ public class DialogSetPubKey extends DialogFragment {
         int startIdx = plainMessage.lastIndexOf("[Signature:")+11;
         int endIdx = plainMessage.lastIndexOf("]");
         return plainMessage.substring(startIdx,endIdx);
+    }
+
+    public boolean isSignatured(String plainMessage){
+        return plainMessage.contains("[Signature:") && plainMessage.contains("]");
     }
 }

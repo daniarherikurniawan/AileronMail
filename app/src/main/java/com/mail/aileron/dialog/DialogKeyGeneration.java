@@ -21,23 +21,30 @@ public class DialogKeyGeneration extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.generated_key, container, false);
         EditText pri_key = (EditText) rootView.findViewById(R.id.private_key);
-        EditText pub_key = (EditText) rootView.findViewById(R.id.public_key);
+        EditText pub_key_x = (EditText) rootView.findViewById(R.id.public_key_x);
+        EditText pub_key_y = (EditText) rootView.findViewById(R.id.public_key_y);
+        final Button dismiss = (Button) rootView.findViewById(R.id.dismiss);
 
         if(tag == "New Key"){
-            getDialog().setTitle("   "+tag);
+            getDialog().setTitle("          "+tag);
             pri_key.setText("22222");
-            pub_key.setText("44444");
+            pub_key_x.setText("44444");
+            pub_key_y.setText("44444");
+            dismiss.setText("Save");
         }else{
-            getDialog().setTitle(" "+tag);
+            getDialog().setTitle("         "+tag);
             pri_key.setText("11111");
-            pub_key.setText("55555");
+            pub_key_x.setText("55555");
+            pub_key_y.setText("44444");
         }
 
-        Button dismiss = (Button) rootView.findViewById(R.id.dismiss);
         dismiss.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                if(dismiss.getText()=="Save"){
+                    //save
+                }
                 dismiss();
             }
         });

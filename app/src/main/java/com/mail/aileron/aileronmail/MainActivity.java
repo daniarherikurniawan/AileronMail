@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private DBHelperInbox mydbInbox;
     private DBHelperOutbox mydbOutbox;
     private int idSelectedMsg;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,29 @@ public class MainActivity extends AppCompatActivity
         mydbInbox = new DBHelperInbox(this);
         mydbOutbox = new DBHelperOutbox(this);
         setContentView(R.layout.activity_main);
+
+
+        // Lookup the swipe container view
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (getSupportActionBar().getTitle() == "Inbox") {
+                    refreshInboxDisplay();
+                } else {
+                    refreshOutboxDisplay();
+                }
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -235,7 +260,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.decrypt:
                 Intent intent = new Intent(MainActivity.this, ReadEncryptedSMS.class);
                 intent.putExtra("id",""+idSelectedMsg);
-                intent.putExtra("tag", getSupportActionBar().getTitle());
+                intent.putExtra("tag", getSupportActionBar().getTitle().toString());
                 startActivity(intent);
                 return true;
             case R.id.verify:

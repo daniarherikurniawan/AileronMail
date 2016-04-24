@@ -1,5 +1,4 @@
-package ellipticcurveds;
-import static ellipticcurveds.EllipticCurveDS.message;
+package com.mail.aileron.signature;
 import java.math.*;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -24,7 +23,7 @@ public class SHA1Algorithm {
             new BigInteger("8F1BBCDC", 16), 
             new BigInteger("CA62C1D6", 16), 
         };   
-        //static final String message = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        static final String message = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         static final BigInteger messageLength = new BigInteger(message.length() + "");
         static BigInteger multipleOf = BigInteger.ONE.add(BigInteger.valueOf(64).add(messageLength.multiply(BigInteger.valueOf(8))).divide(BigInteger.valueOf(512)));
 
@@ -100,7 +99,7 @@ public class SHA1Algorithm {
         BigInteger[] wordBigTemp = new BigInteger[64];
         BigInteger[] wordBig = new BigInteger[80];
         //------------ complex looping process --------------
-        for (int i=0; i<multipleOf.intValueExact(); i++) {
+        for (int i=0; i<multipleOf.intValue(); i++) {
             //-------------- split blockmessage to 16 blocks -----------
             //-------- 0 until 15 -------
             //System.out.println("sip1");

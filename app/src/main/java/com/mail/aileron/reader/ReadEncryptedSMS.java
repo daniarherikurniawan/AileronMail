@@ -25,24 +25,36 @@ public class ReadEncryptedSMS extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_encrypted_sms);
-        getSupportActionBar().setTitle("Decrypted Message");
+
 
         Intent intent = getIntent();
         int id = Integer.parseInt(intent.getStringExtra("id"));
         String tag = intent.getStringExtra("tag");
 
-        if(tag == "Inbox")
+        if(tag.compareTo("Inbox") == 0) {
             msg = mydbInbox.getMessage(id);
-        else
+        }else {
             msg = mydbOutbox.getMessage(id);
+        }
 
         TextView tv = (TextView) findViewById(R.id.message_decrypted);
-        tv.setText(getEncryptedText(msg.message));
+
+        if(isEncrypted(msg.message)){
+            getSupportActionBar().setTitle("Decrypted Message");
+            tv.setText(getEncryptedText(msg.message ));
+        } else {
+            getSupportActionBar().setTitle("Original Message");
+            tv.setText((msg.message ));
+        }
     }
 
     public String getEncryptedText(String plainMessage){
         int startIdx = plainMessage.lastIndexOf("<encrypted>")+11;
         int endIdx = plainMessage.indexOf("</encrypted>");
         return plainMessage.substring(startIdx,endIdx);
+    }
+
+    public boolean isEncrypted(String plainMessage){
+        return plainMessage.contains("<encrypted>") && plainMessage.contains("</encrypted>");
     }
 }

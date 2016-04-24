@@ -24,7 +24,7 @@ public class DBTableCreator extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
                 "create table user " +
-                        "(email text primary key, password text, status text, pri_key text, pub_key text)"
+                        "(email text primary key, password text, status text, pri_key text, pub_key_x text, pub_key_y text)"
         );
         db.execSQL(
                 "create table inbox " +

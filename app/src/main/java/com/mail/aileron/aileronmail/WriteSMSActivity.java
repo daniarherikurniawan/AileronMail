@@ -42,6 +42,13 @@ public class WriteSMSActivity extends AppCompatActivity {
         checkEncription = (CheckBox) findViewById(R.id.checkBox1);
         checkSignature = (CheckBox) findViewById(R.id.checkBox2);
 
+
+        Intent intent = getIntent();
+        String no_receiver = intent.getStringExtra("no_receiver");
+        if(no_receiver!=null){
+            txtphoneNo.setText(no_receiver);
+        }
+
         Button sendButton = (Button) findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,11 +126,28 @@ public class WriteSMSActivity extends AppCompatActivity {
             }
 
         }else if(checkSignature.isChecked()){
-            /* + 56 karakter*/
-            message = message + "\n\n[Signature: 12547369860bc327f65492bcd2f7dba826084a76]";
+            /* + 56-23 karakter*/
+            int idxLast = 0;
+            for (int i= 0; i < plainMessage.length();){
+                /* + 55 karakter*/
+                idxLast += 103;
+                if(plainMessage.length() < idxLast)
+                    idxLast = plainMessage.length();
+
+                message += plainMessage.substring(i, idxLast) + "\n\n[Signature: 12547369860bc327f65492bcd2f7dba826084a76]";
+                i = idxLast;
+            }
         }else if(checkEncription.isChecked()){
-            /* + 56 karakter*/
-            message = message + "\n\n[Signature: 12547369860bc327f65492bcd2f7dba826084a76]";
+            int idxLast = 0;
+            for (int i= 0; i < plainMessage.length();){
+                /* + 23 karakter*/
+                idxLast += 135;
+                if(plainMessage.length() < idxLast)
+                    idxLast = plainMessage.length();
+
+                message += "<encrypted>"+plainMessage.substring(i, idxLast)+"</encrypted>";
+                i = idxLast;
+            }
         }else{
             message = plainMessage;
         }
