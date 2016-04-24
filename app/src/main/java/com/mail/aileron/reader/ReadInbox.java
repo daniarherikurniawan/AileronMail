@@ -14,7 +14,6 @@ import com.mail.aileron.object.Message;
 
 public class ReadInbox extends AppCompatActivity {
 
-    TextView phoneView;
     TextView messageView;
     private DBHelperInbox mydbInbox;
 

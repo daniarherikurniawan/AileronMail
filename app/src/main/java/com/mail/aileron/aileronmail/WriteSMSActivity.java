@@ -109,11 +109,11 @@ public class WriteSMSActivity extends AppCompatActivity {
             int idxLast = 0;
             for (int i= 0; i < plainMessage.length();){
                 /* + 77 karakter*/
-                idxLast += 81;
+                idxLast += 80;
                 if(plainMessage.length() < idxLast)
                     idxLast = plainMessage.length();
 
-                message += "<encrypted>"+plainMessage.substring(i, idxLast)+"<encrypted>";
+                message += "<encrypted>"+plainMessage.substring(i, idxLast)+"</encrypted>";
                 message = message + "\n\n[Signature: 12547369860bc327f65492bcd2f7dba826084a76]";
                 i = idxLast;
             }

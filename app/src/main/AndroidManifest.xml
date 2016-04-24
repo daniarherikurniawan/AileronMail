@@ -36,8 +36,9 @@
             android:name=".WriteSMSActivity"
             android:label="@string/title_activity_write_sms"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.mail.aileron.reader.ReadInbox"></activity>
-        <activity android:name="com.mail.aileron.reader.ReadOutbox"></activity>
+        <activity android:name="com.mail.aileron.reader.ReadInbox" />
+        <activity android:name="com.mail.aileron.reader.ReadOutbox" />
+        <activity android:name="com.mail.aileron.reader.ReadEncryptedSMS"></activity>
     </application>
 
 </manifest>

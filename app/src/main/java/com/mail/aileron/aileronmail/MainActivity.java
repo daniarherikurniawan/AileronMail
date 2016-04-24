@@ -32,8 +32,10 @@ import com.mail.aileron.database.DBHelperOutbox;
 import com.mail.aileron.database.DBHelperUser;
 import com.mail.aileron.database.DBTableCreator;
 import com.mail.aileron.dialog.DialogKeyGeneration;
+import com.mail.aileron.dialog.DialogSetPubKey;
 import com.mail.aileron.login.LoginActivity;
 import com.mail.aileron.object.Message;
+import com.mail.aileron.reader.ReadEncryptedSMS;
 import com.mail.aileron.reader.ReadInbox;
 import com.mail.aileron.reader.ReadOutbox;
 
@@ -231,10 +233,17 @@ public class MainActivity extends AppCompatActivity
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch(item.getItemId()) {
             case R.id.decrypt:
-                // add stuff here
+                Intent intent = new Intent(MainActivity.this, ReadEncryptedSMS.class);
+                intent.putExtra("id",""+idSelectedMsg);
+                intent.putExtra("tag", getSupportActionBar().getTitle());
+                startActivity(intent);
                 return true;
             case R.id.verify:
-                // edit stuff here
+                FragmentManager fm = getFragmentManager();
+                DialogSetPubKey dialogFragment = new DialogSetPubKey();
+                dialogFragment.setId(idSelectedMsg);
+                dialogFragment.setTag(getSupportActionBar().getTitle().toString());
+                dialogFragment.show(fm, "Set Public Key");
                 return true;
             case R.id.delete:
                 if (getSupportActionBar().getTitle() == "Inbox") {
